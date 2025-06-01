@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Use Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python 3.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.7'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: |
+          cd ui
+          npm ci
+
+      - name: Build Python
+        run: -m compileall -b -q -j0 .
+
+      - name: Build Vue
+        run: |
+          cd ui
+          npm run build
+
+      - name: Pack TS4Script
+        run: zip -r TS4_Remote_REPL.ts4script . -i '*.pyc' '*.html' '*.md' '*.css' '*.scss' '*.js' '*.json' '*.mjs' '*.ts' '*.vue' '*.jpg' '*.jpeg' '*.gif' '*.png' '*.ico' '*.ttf' '*.otf' '*.eot' '*.woff' '*.woff2' '*.browserslistrc' '*.editorconfig' -x '*node_modules*'
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: my-app-build
+          path: TS4_Remote_REPL.ts4script
