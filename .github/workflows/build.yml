@@ -35,11 +35,20 @@ jobs:
           cd ui
           npm run build
 
+      - name: Move Dist
+        run: mv ui/dist/ dist/
+
+      - name: Delete Vue Source
+        run: rm -rf ui
+
+      - name: Dist -> UI
+        run: mv dist/ ui/
+
       - name: Pack TS4Script
-        run: zip -r TS4_Remote_REPL.ts4script . -i '*.pyc' '*.html' '*.md' '*.css' '*.scss' '*.js' '*.json' '*.mjs' '*.ts' '*.vue' '*.jpg' '*.jpeg' '*.gif' '*.png' '*.ico' '*.ttf' '*.otf' '*.eot' '*.woff' '*.woff2' '*.browserslistrc' '*.editorconfig' -x '*node_modules*'
+        run: zip -r "CodeBleu - TS4 Remote REPL.ts4script" . -i '*.pyc' '*.html' '*.md' '*.css' '*.scss' '*.js' '*.json' '*.mjs' '*.ts' '*.vue' '*.jpg' '*.jpeg' '*.gif' '*.png' '*.ico' '*.ttf' '*.otf' '*.eot' '*.woff' '*.woff2' '*.browserslistrc' '*.editorconfig' -x '*node_modules*'
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CodeBleu - TS4 Remote REPL.ts4script
-          path: TS4_Remote_REPL.ts4script
+          name: CodeBleu - TS4 Remote REPL
+          path: "CodeBleu - TS4 Remote REPL.ts4script"
