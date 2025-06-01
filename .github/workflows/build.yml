@@ -28,7 +28,7 @@ jobs:
           npm ci
 
       - name: Build Python
-        run: -m compileall -b -q -j0 .
+        run: python -m compileall -b -q -j0 .
 
       - name: Build Vue
         run: |
