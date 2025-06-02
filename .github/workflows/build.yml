@@ -45,7 +45,7 @@ jobs:
         run: mv dist/ ui/
 
       - name: Pack TS4Script
-        run: zip -r "CodeBleu - TS4 Remote REPL.ts4script" . -i '*.pyc' '*.html' '*.md' '*.css' '*.scss' '*.js' '*.json' '*.mjs' '*.ts' '*.vue' '*.jpg' '*.jpeg' '*.gif' '*.png' '*.ico' '*.ttf' '*.otf' '*.eot' '*.woff' '*.woff2' '*.browserslistrc' '*.editorconfig' -x '*README.md*'
+        run: zip -r -9 -Z deflate "CodeBleu - TS4 Remote REPL.ts4script" . -i '*.pyc' '*.html' '*.md' '*.css' '*.scss' '*.js' '*.json' '*.mjs' '*.ts' '*.vue' '*.jpg' '*.jpeg' '*.gif' '*.png' '*.ico' '*.ttf' '*.otf' '*.eot' '*.woff' '*.woff2' '*.browserslistrc' '*.editorconfig' -x '*README.md*'
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
