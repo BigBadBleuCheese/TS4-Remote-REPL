@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Use Checkout
+      - name: Use checkout
         uses: actions/checkout@v3
 
-      - name: Setup Python 3.7
+      - name: Set up Python 3.7
         uses: actions/setup-python@v4
         with:
           python-version: '3.7.17'
@@ -27,24 +27,24 @@ jobs:
           cd ui
           npm ci
 
-      - name: Build Python
+      - name: Compile mod source to byte code
         run: python -m compileall -b -q -j0 .
 
-      - name: Build Vue
+      - name: Build the Vue website for production
         run: |
           cd ui
           npm run build
 
-      - name: Move Dist
+      - name: Move dist
         run: mv ui/dist/ dist/
 
-      - name: Delete Vue Source
+      - name: Delete Vue source
         run: rm -rf ui
 
-      - name: Dist -> UI
+      - name: dist -> ui
         run: mv dist/ ui/
 
-      - name: Pack TS4Script
+      - name: Pack script mod
         run: zip -r -0 "CodeBleu - TS4 Remote REPL.ts4script" . -i '*.pyc' '*.html' '*.md' '*.css' '*.scss' '*.js' '*.json' '*.mjs' '*.ts' '*.vue' '*.jpg' '*.jpeg' '*.gif' '*.png' '*.ico' '*.ttf' '*.otf' '*.eot' '*.woff' '*.woff2' '*.browserslistrc' '*.editorconfig' -x '*README.md*'
 
       - name: Upload build artifact
