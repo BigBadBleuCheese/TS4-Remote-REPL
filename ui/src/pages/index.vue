@@ -78,7 +78,7 @@
                 />
                 <v-tooltip
                     location="top"
-                    text="Send to TS4 and Run"
+                    text="Send All to TS4 and Run"
                 >
                     <template
                         v-slot:activator="{ props }"
@@ -86,8 +86,23 @@
                         <v-btn
                             v-bind="props"
                             color="success"
-                            icon="mdi-play-network"
-                            @click="handleSendAndRun"
+                            icon="mdi-run"
+                            @click="handleSendAllAndRun"
+                        />
+                    </template>
+                </v-tooltip>
+                <v-tooltip
+                    location="top"
+                    text="Send Selected to TS4 and Run"
+                >
+                    <template
+                        v-slot:activator="{ props }"
+                    >
+                        <v-btn
+                            v-bind="props"
+                            color="success"
+                            icon="mdi-run-fast"
+                            @click="handleSendSelectionAndRun"
                         />
                     </template>
                 </v-tooltip>
@@ -95,12 +110,12 @@
             <div
                 class="flex-grow-1"
             >
-                <vue-monaco-editor
-                    v-model:value="code"
-                    language="python"
-                    :options="MONACO_EDITOR_OPTIONS"
-                    theme="vs-dark"
-                    @mount="handleMount"
+                <v-textarea
+                    ref="editor"
+                    v-model="code"
+                    class="h-100 monospace mt-3 mx-2"
+                    label="Python"
+                    variant="outlined"
                 />
             </div>
         </div>
@@ -204,43 +219,41 @@
     }
 
     const mode = ref('eval');
-    const code = ref('# Python code');
-    const editor = shallowRef();
+    const code = ref('');
+    const editor = ref(null);
     const responses = ref([]);
     const responsesContainer = ref(null);
 
-    function handleMount(editorInstance) {
-        editor.value = editorInstance;
+    function getSelectedCode() {
+        const ed = editor.value;
+        return ed.value.slice(ed.selectionStart, ed.selectionEnd);
+    }
+
+    function replaceSelectedCode(replacement) {
+        const pyCode = code.value;
+        const ed = editor.value;
+        code.value = `${pyCode.slice(0, ed.selectionStart)}${replacement}${pyCode.slice(ed.selectionEnd)}`;
     }
 
     function handleAddElementToResultsList() {
-        const ed = editor.value;
-        const sel = ed.getSelection();
-        ed.executeEdits('add-result-element', [
-            {
-                range: sel,
-                text: `__EXEC_RESULTS_LIST__.append(${ed.getModel().getValueInRange(sel)})`,
-                forceMoveMarkers: true,
-            }
-        ]);
+        replaceSelectedCode(`__EXEC_RESULTS_LIST__.append(${getSelectedCode()})`);
     }
 
     function handleAddValueToResultsDict() {
-        const ed = editor.value;
-        const sel = ed.getSelection();
-        ed.executeEdits('add-result-element', [
-            {
-                range: sel,
-                text: `__EXEC_RESULTS_DICT__[''] = ${ed.getModel().getValueInRange(sel)}`,
-                forceMoveMarkers: true,
-            }
-        ]);
+        replaceSelectedCode(`__EXEC_RESULTS_DICT__[''] = ${getSelectedCode()}`);
     }
     
-    function handleSendAndRun() {
+    function handleSendAllAndRun() {
         gateway.announce({
             type: mode.value,
             code: code.value,
+        });
+    }
+
+    function handleSendSelectionAndRun() {
+        gateway.announce({
+            type: mode.value,
+            code: getSelectedCode(),
         });
     }
 
@@ -253,3 +266,9 @@
         gateway.dataReceived.addListener(handleDataReceived);
     }
 </script>
+
+<style>
+    .monospace {
+        font-family: monospace;
+    }
+</style>
