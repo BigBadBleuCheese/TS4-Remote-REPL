@@ -8,7 +8,7 @@ _bridged_ui_uuid = UUID('29e2dcda-7850-4a9f-80c2-f882600eadec')
 @Command("remote_repl.launch", command_type=CommandType.Live)
 def command_launch_remote_debugger(_connection=None):
     # request the bridged UI
-    eventual_bridged_ui = gateway.request_bridged_ui(None, 'http://localhost:3000', _bridged_ui_uuid, 'Remote REPL', 'You typed the command in the game console to get me to make this request.', 'Remote REPL')
+    eventual_bridged_ui = gateway.request_bridged_ui(__file__, 'ui', _bridged_ui_uuid, 'Remote REPL', 'You typed the command in the game console to get me to make this request.', 'Remote REPL')
     def bridged_ui_announcement(announcement):
         if isinstance(announcement, dict): # is the announcement a structured object?
             announcement_code = None
