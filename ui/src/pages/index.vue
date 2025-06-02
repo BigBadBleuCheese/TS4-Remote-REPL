@@ -249,5 +249,7 @@
         setTimeout(() => responsesContainer.value.scrollTop = responsesContainer.value.scrollHeight, 0);
     }
 
-    gateway.dataReceived.addListener(handleDataReceived);
+    if (typeof gateway !== 'undefined') {
+        gateway.dataReceived.addListener(handleDataReceived);
+    }
 </script>
