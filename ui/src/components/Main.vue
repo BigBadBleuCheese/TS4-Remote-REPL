@@ -110,12 +110,12 @@
             <div
                 class="flex-grow-1"
             >
-                <v-textarea
-                    ref="editor"
-                    v-model="code"
-                    class="h-100 monospace mt-3 mx-2"
-                    label="Python"
-                    variant="outlined"
+                <vue-monaco-editor
+                    v-model:value="code"
+                    language="python"
+                    :options="MONACO_EDITOR_OPTIONS"
+                    theme="vs-dark"
+                    @mount="handleMount"
                 />
             </div>
         </div>
@@ -219,20 +219,29 @@
     }
 
     const mode = ref('eval');
-    const code = ref('');
-    const editor = ref(null);
+    const code = ref('# Python code');
+    const editor = shallowRef();
     const responses = ref([]);
     const responsesContainer = ref(null);
 
+    function handleMount(editorInstance) {
+        editor.value = editorInstance;
+    }
+
     function getSelectedCode() {
         const ed = editor.value;
-        return ed.value.slice(ed.selectionStart, ed.selectionEnd);
+        return ed.getModel().getValueInRange(ed.getSelection());
     }
 
     function replaceSelectedCode(replacement) {
-        const pyCode = code.value;
         const ed = editor.value;
-        code.value = `${pyCode.slice(0, ed.selectionStart)}${replacement}${pyCode.slice(ed.selectionEnd)}`;
+        ed.executeEdits('replace', [
+            {
+                range: ed.getSelection(),
+                text: replacement,
+                forceMoveMarkers: true,
+            }
+        ]);
     }
 
     function handleAddElementToResultsList() {

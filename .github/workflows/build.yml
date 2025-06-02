@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install dependencies
+      - name: Install Node dependencies
         run: |
           cd ui
           npm ci
@@ -35,7 +35,7 @@ jobs:
           cd ui
           npm run build
 
-      - name: Move dist
+      - name: ui/dist -> dist
         run: mv ui/dist/ dist/
 
       - name: Delete Vue source
