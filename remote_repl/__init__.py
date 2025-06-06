@@ -8,6 +8,9 @@ _bridged_ui_uuid = UUID('29e2dcda-7850-4a9f-80c2-f882600eadec')
 def command_launch_remote_debugger(_connection=None):
     try:
         from plumbbuddy_proxy.api import gateway, BridgedUi
+        if _bridged_ui is not None:
+            _bridged_ui.focus()
+            return
         # request the bridged UI
         eventual_bridged_ui = gateway.request_bridged_ui(__file__, 'ui', _bridged_ui_uuid, 'Remote REPL', 'You typed the command in the game console to get me to make this request.', 'Remote REPL')
         def bridged_ui_announcement(announcement):
