@@ -77,7 +77,7 @@ def command_launch_remote_debugger(_connection=None):
                         'type': 'unrecognized_announcement_type'
                     })
             
-            def handle_bridged_ui_destroyed():
+            def handle_bridged_ui_destroyed(_):
                 global _bridged_ui
                 _bridged_ui = None
             
