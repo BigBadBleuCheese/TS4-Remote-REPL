@@ -7,6 +7,12 @@ _bridged_ui_uuid = UUID('29e2dcda-7850-4a9f-80c2-f882600eadec')
 @Command("remote_repl.launch", command_type=CommandType.Live)
 def command_launch_remote_debugger(_connection=None):
     global _bridged_ui
+    if _bridged_ui is not None:
+        output = CheatOutput(_connection)
+        output("My bridged UI is already open in PlumbBuddy.")
+        _bridged_ui.focus()
+        return
+
     try:
         from plumbbuddy_proxy.api import gateway, PlumbBuddyNotConnectedError, PlayerDeniedRequestError, BridgedUiNotFoundError
         look_up_bridged_ui_eventually = gateway.look_up_bridged_ui(_bridged_ui_uuid)
@@ -80,6 +86,8 @@ def command_launch_remote_debugger(_connection=None):
             bridged_ui.destroyed.add_listener(handle_bridged_ui_destroyed)
 
         def handle_look_up_result(bridged_ui):
+            output = CheatOutput(_connection)
+            output("My bridged UI is already open in PlumbBuddy.")
             initialize_bridged_ui(bridged_ui)
             bridged_ui.focus()
 
@@ -89,8 +97,10 @@ def command_launch_remote_debugger(_connection=None):
                 output(f"I tried to look up a reference to my bridged UI and the look up failed for an unexpected reason: {str(fault)}")
                 return
             request_bridged_ui_eventually = gateway.request_bridged_ui(__file__, 'ui', _bridged_ui_uuid, 'Remote REPL', 'You typed the command in the game console to get me to make this request.', 'Remote REPL')
+            output = CheatOutput(_connection)
             
             def handle_request_result(bridged_ui):
+                output("I've initialized my bridged UI in PlumbBuddy.")
                 initialize_bridged_ui(bridged_ui)
 
             def handle_request_fault(fault):
@@ -102,10 +112,11 @@ def command_launch_remote_debugger(_connection=None):
                 else:
                     output(f"I tried to request a reference to my bridged UI and the request failed for an unexpected reason: {str(fault)}")
 
+            output("My bridged UI isn't currently loaded, so I'll submit a request for your approval to PlumbBuddy.")
             request_bridged_ui_eventually.then(handle_request_result, handle_request_fault) # tell the Eventual what to do when PB answers
 
         look_up_bridged_ui_eventually.then(handle_look_up_result, handle_look_up_fault)
-        
+
     except ModuleNotFoundError:
         output = CheatOutput(_connection)
         output("I couldn't find the PlumbBuddy Proxy, so... you may need to download and run PlumbBuddy from https://plumbbuddy.app -OR- you've turned off runtime integration in PlumbBuddy.")
