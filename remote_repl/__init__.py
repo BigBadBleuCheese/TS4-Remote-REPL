@@ -6,6 +6,7 @@ _bridged_ui_uuid = UUID('29e2dcda-7850-4a9f-80c2-f882600eadec')
 
 @Command("remote_repl.launch", command_type=CommandType.Live)
 def command_launch_remote_debugger(_connection=None):
+    global _bridged_ui
     try:
         from plumbbuddy_proxy.api import gateway, BridgedUi
         if _bridged_ui is not None:
