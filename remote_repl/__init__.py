@@ -92,12 +92,14 @@ def command_launch_remote_debugger(_connection=None):
             bridged_ui.focus()
 
         def handle_look_up_fault(fault):
-            if not isinstance(fault, BridgedUiNotFoundError):
-                output = CheatOutput(_connection)
+            output = CheatOutput(_connection)
+            if isinstance(fault, PlumbBuddyNotConnectedError):
+                output("I can't display my bridged UI since you've shutdown PlumbBuddy! Start it back up and try again...")
+                return
+            elif not isinstance(fault, BridgedUiNotFoundError):
                 output(f"I tried to look up a reference to my bridged UI and the look up failed for an unexpected reason: {str(fault)}")
                 return
             request_bridged_ui_eventually = gateway.request_bridged_ui(__file__, 'ui', _bridged_ui_uuid, 'Remote REPL', 'You typed the command in the game console to get me to make this request.', 'Remote REPL')
-            output = CheatOutput(_connection)
             
             def handle_request_result(bridged_ui):
                 output("I've initialized my bridged UI in PlumbBuddy.")
