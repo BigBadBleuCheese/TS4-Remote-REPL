@@ -85,9 +85,7 @@ def command_launch_remote_debugger(_connection=None):
                 _bridged_ui = None
 
         @await_for(gateway.look_up_bridged_ui(_bridged_ui_uuid))
-        def look_up_bridged_ui_continuation(response):
-            bridged_ui, fault = response
-
+        def look_up_bridged_ui_continuation(bridged_ui, fault):
             if bridged_ui:
                 respond_to_player("My bridged UI is already open in PlumbBuddy.")
                 initialize_bridged_ui(bridged_ui)
@@ -103,9 +101,7 @@ def command_launch_remote_debugger(_connection=None):
                 return
             
             @await_for(gateway.request_bridged_ui(__file__, 'ui', _bridged_ui_uuid, 'Remote REPL', 'You typed the command in the game console to get me to make this request.', 'Remote REPL'))
-            def request_bridged_ui_continuation(response):
-                bridged_ui, fault = response
-
+            def request_bridged_ui_continuation(bridged_ui, fault):
                 if bridged_ui:
                     respond_to_player("I've opened my bridged UI in PlumbBuddy.")
                     initialize_bridged_ui(bridged_ui)
