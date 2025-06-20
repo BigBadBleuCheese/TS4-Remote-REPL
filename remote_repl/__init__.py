@@ -16,7 +16,7 @@ def command_launch_remote_debugger(_connection=None):
 
     try:
         from plumbbuddy_proxy.asynchronous import await_for, listen_for
-        from plumbbuddy_proxy.api import get_gateway, PlumbBuddyNotConnectedError, PlayerDeniedRequestError, BridgedUiNotFoundError
+        from plumbbuddy_proxy.api import gateway, PlumbBuddyNotConnectedError, PlayerDeniedRequestError, BridgedUiNotFoundError
 
         def initialize_bridged_ui(bridged_ui):
             global _bridged_ui
@@ -83,8 +83,6 @@ def command_launch_remote_debugger(_connection=None):
             def handle_bridged_ui_destroyed(_):
                 global _bridged_ui
                 _bridged_ui = None
-        
-        gateway = get_gateway()
 
         @await_for(gateway.look_up_bridged_ui(_bridged_ui_uuid))
         def look_up_bridged_ui_continuation(bridged_ui, fault):
