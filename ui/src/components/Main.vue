@@ -6,9 +6,10 @@
         <div
             class="d-flex flex-column w-50"
         >
-            <v-toolbar 
-                border 
+            <v-toolbar
                 density="comfortable"
+                image="../assets/toolbar-background.gif"
+                title="Remote REPL"
             >
                 <v-tooltip
                     location="top"
@@ -19,9 +20,12 @@
                     >
                         <v-btn
                             v-bind="props"
-                            :color="mode === 'eval' ? 'primary' : ''"
+                            class="ma-1"
+                            :color="persistedState.mode === 'eval' ? 'primary' : ''"
                             icon="mdi-math-integral-box"
-                            @click="mode = 'eval'"
+                            variant="flat"
+                            size="small"
+                            @click="persistedState.mode = 'eval'"
                         />
                     </template>
                 </v-tooltip>
@@ -34,9 +38,12 @@
                     >
                         <v-btn
                             v-bind="props"
-                            :color="mode === 'exec' ? 'primary' : ''"
+                            class="ma-1"
+                            :color="persistedState.mode === 'exec' ? 'primary' : ''"
                             icon="mdi-code-braces-box"
-                            @click="mode = 'exec'"
+                            variant="flat"
+                            size="small"
+                            @click="persistedState.mode = 'exec'"
                         />
                     </template>
                 </v-tooltip>
@@ -52,8 +59,11 @@
                     >
                         <v-btn
                             v-bind="props"
-                            :disabled="mode !== 'exec'"
+                            class="ma-1"
+                            :disabled="persistedState.mode !== 'exec'"
                             icon="mdi-code-block-brackets"
+                            variant="flat"
+                            size="small"
                             @click="handleAddElementToResultsList"
                         />
                     </template>
@@ -67,8 +77,11 @@
                     >
                         <v-btn
                             v-bind="props"
-                            :disabled="mode !== 'exec'"
+                            class="ma-1"
+                            :disabled="persistedState.mode !== 'exec'"
                             icon="mdi-code-block-braces"
+                            variant="flat"
+                            size="small"
                             @click="handleAddValueToResultsDict"
                         />
                     </template>
@@ -85,8 +98,11 @@
                     >
                         <v-btn
                             v-bind="props"
+                            class="ma-1"
                             color="success"
                             icon="mdi-run"
+                            variant="flat"
+                            size="small"
                             @click="handleSendAllAndRun"
                         />
                     </template>
@@ -100,8 +116,11 @@
                     >
                         <v-btn
                             v-bind="props"
+                            class="ma-1"
                             color="success"
                             icon="mdi-run-fast"
+                            variant="flat"
+                            size="small"
                             @click="handleSendSelectionAndRun"
                         />
                     </template>
@@ -111,7 +130,7 @@
                 class="flex-grow-1"
             >
                 <vue-monaco-editor
-                    v-model:value="code"
+                    v-model:value="persistedState.code"
                     language="python"
                     :options="MONACO_EDITOR_OPTIONS"
                     theme="vs-dark"
@@ -143,65 +162,35 @@
                     >
                         <pre class="pa-2">{{ response.thrown }}</pre>
                     </v-card>
-                    <v-table
-                        v-if="!response.thrown && response.type === 'exec_result' && response.results_list && response.results_list.length"
-                        class="mx-2 mb-2"
-                        density="compact"
-                    >
-                        <thead>
-                            <tr>
-                                <th
-                                >
-                                    Value
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                v-for="element in response.results_list"
-                            >
-                                <td>
-                                    <code>{{ JSON.stringify(element) }}</code>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </v-table>
-                    <v-table
-                        v-if="!response.thrown && response.type === 'exec_result' && response.results_dict && Object.keys(response.results_dict).length"
-                        class="mx-2 mb-2"
-                        density="compact"
-                    >
-                        <thead>
-                            <tr>
-                                <th
-                                >
-                                    Attribute
-                                </th>
-                                <th
-                                >
-                                    Value
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                v-for="key in Object.keys(response.results_dict)"
-                            >
-                                <td>
-                                    <code>{{ JSON.stringify(key) }}</code>
-                                </td>
-                                <td>
-                                    <code>{{ JSON.stringify(response.results_dict[key]) }}</code>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </v-table>
                     <v-card
                         v-if="!response.thrown && response.type === 'eval_result'"
                         class="mx-2 mb-2"
                         variant="oulined"
                     >
-                        <code class="px-2">{{ JSON.stringify(response.eval_result) }}</code>
+                        <highlightjs
+                            :code="JSON.stringify(response.eval_result, null, 4)"
+                            language="js"
+                        />
+                    </v-card>
+                    <v-card
+                        v-if="!response.thrown && response.type === 'exec_result' && response.results_list && response.results_list.length"
+                        class="mx-2 mb-2"
+                        variant="oulined"
+                    >
+                        <highlightjs
+                            :code="JSON.stringify(response.results_list, null, 4)"
+                            language="js"
+                        />
+                    </v-card>
+                    <v-card
+                        v-if="!response.thrown && response.type === 'exec_result' && response.results_dict && Object.keys(response.results_dict).length"
+                        class="mx-2 mb-2"
+                        variant="oulined"
+                    >
+                        <highlightjs
+                            :code="JSON.stringify(response.results_dict, null, 4)"
+                            language="js"
+                        />
                     </v-card>
                 </v-card>
             </div>
@@ -211,6 +200,9 @@
 
 <script setup>
     import { ref, shallowRef } from 'vue';
+    import { usePersistedState } from '@/stores/global-state';
+
+    const persistedState = usePersistedState();
 
     const MONACO_EDITOR_OPTIONS = {
         automaticLayout: true,
@@ -218,8 +210,6 @@
         formatOnPaste: true,
     }
 
-    const mode = ref('eval');
-    const code = ref('# Python code');
     const editor = shallowRef();
     const responses = ref([]);
     const responsesContainer = ref(null);
@@ -254,14 +244,14 @@
     
     function handleSendAllAndRun() {
         gateway.announce({
-            type: mode.value,
-            code: code.value,
+            type: persistedState.mode.value,
+            code: persistedState.code.value,
         });
     }
 
     function handleSendSelectionAndRun() {
         gateway.announce({
-            type: mode.value,
+            type: persistedState.mode.value,
             code: getSelectedCode(),
         });
     }
