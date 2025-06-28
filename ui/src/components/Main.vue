@@ -8,7 +8,7 @@
         >
             <v-toolbar
                 density="comfortable"
-                image="../assets/toolbar-background.gif"
+                :image="persistedState.toolbarAnimation === 1 ? '/toolbar-background.gif' : '/toolbar-background.jpg'"
                 title="Remote REPL"
             >
                 <v-tooltip
@@ -124,6 +124,31 @@
                             :variant="selectedCode.length ? 'flat' : 'tonal'"
                             @click="handleSendSelectionAndRun"
                         />
+                    </template>
+                </v-tooltip>
+                <v-divider
+                    vertical
+                />
+                <v-tooltip
+                    location="top"
+                    text="Toolbar Background Animation"
+                >
+                    <template
+                        v-slot:activator="{ props }"
+                    >
+                        <v-btn-toggle
+                            v-bind="props"
+                            v-model="persistedState.toolbarAnimation"
+                            class="ma-1"
+                            variant="flat"
+                        >
+                            <v-btn>
+                                <v-icon>mdi-stop</v-icon>
+                            </v-btn>
+                            <v-btn>
+                                <v-icon>mdi-play</v-icon>
+                            </v-btn>
+                        </v-btn-toggle>
                     </template>
                 </v-tooltip>
             </v-toolbar>
