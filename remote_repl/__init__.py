@@ -100,8 +100,8 @@ def command_launch_remote_debugger(_connection=None):
                 respond_to_player(f"I tried to look up a reference to my bridged UI and the look up failed for an unexpected reason: {str(fault)}")
                 return
             
-            #@await_for(gateway.request_bridged_ui(__file__, 'ui', _bridged_ui_uuid, 'Remote REPL', 'You typed the command in the game console to get me to make this request.', 'Remote REPL', 'tab-icon.png'))
-            @await_for(gateway.request_bridged_ui(None, 'http://localhost:3000', _bridged_ui_uuid, 'Remote REPL', 'You typed the command in the game console to get me to make this request.', 'Remote REPL', 'tab-icon.png'))
+            #@await_for(gateway.request_bridged_ui(None, 'http://localhost:3000', _bridged_ui_uuid, 'Remote REPL', 'You typed the command in the game console to get me to make this request.', 'Remote REPL', 'tab-icon.png'))
+            @await_for(gateway.request_bridged_ui(__file__, 'ui', _bridged_ui_uuid, 'Remote REPL', 'You typed the command in the game console to get me to make this request.', 'Remote REPL', 'tab-icon.png'))
             def request_bridged_ui_continuation(bridged_ui, fault):
                 if bridged_ui:
                     respond_to_player("I've opened my bridged UI in PlumbBuddy.")

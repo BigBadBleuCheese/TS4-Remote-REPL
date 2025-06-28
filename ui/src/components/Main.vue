@@ -23,8 +23,8 @@
                             class="ma-1"
                             :color="persistedState.mode === 'eval' ? 'primary' : ''"
                             icon="mdi-math-integral-box"
-                            variant="flat"
                             size="small"
+                            variant="flat"
                             @click="persistedState.mode = 'eval'"
                         />
                     </template>
@@ -41,8 +41,8 @@
                             class="ma-1"
                             :color="persistedState.mode === 'exec' ? 'primary' : ''"
                             icon="mdi-code-braces-box"
-                            variant="flat"
                             size="small"
+                            variant="flat"
                             @click="persistedState.mode = 'exec'"
                         />
                     </template>
@@ -62,8 +62,8 @@
                             class="ma-1"
                             :disabled="persistedState.mode !== 'exec'"
                             icon="mdi-code-block-brackets"
-                            variant="flat"
                             size="small"
+                            :variant="persistedState.mode === 'exec' ? 'flat' : 'tonal'"
                             @click="handleAddElementToResultsList"
                         />
                     </template>
@@ -80,8 +80,8 @@
                             class="ma-1"
                             :disabled="persistedState.mode !== 'exec'"
                             icon="mdi-code-block-braces"
-                            variant="flat"
                             size="small"
+                            :variant="persistedState.mode === 'exec' ? 'flat' : 'tonal'"
                             @click="handleAddValueToResultsDict"
                         />
                     </template>
@@ -101,8 +101,8 @@
                             class="ma-1"
                             color="success"
                             icon="mdi-run"
-                            variant="flat"
                             size="small"
+                            variant="flat"
                             @click="handleSendAllAndRun"
                         />
                     </template>
@@ -118,9 +118,10 @@
                             v-bind="props"
                             class="ma-1"
                             color="success"
+                            :disabled="!selectedCode.length"
                             icon="mdi-run-fast"
-                            variant="flat"
                             size="small"
+                            :variant="selectedCode.length ? 'flat' : 'tonal'"
                             @click="handleSendSelectionAndRun"
                         />
                     </template>
@@ -150,47 +151,54 @@
                     v-for="response in responses"
                     :color="response.thrown ? 'error' : ''"
                     :prepend-icon="response.type === 'exec_result' ? 'mdi-code-braces-box' : 'mdi-math-integral-box'"
-                    :subtitle="response.thrown ? 'This operation raised an error.' : ''"
-                    :title="response.type === 'exec_result' ? 'Execution Result' : response.type === 'eval_result' ? 'Evaluation Result' : 'Unrecognized Response'"
-                    variant="tonal"
+                    :subtitle="response.thrown ? 'This operation raised an error.' : 'This operation did not raise any errors.'"
+                    :title="response.type === 'exec_result' ? 'Execution Complete' : response.type === 'eval_result' ? 'Evaluation Complete' : 'Unrecognized Response'"
+                    variant="outlined"
                 >
                     <v-card
                         v-if="response.thrown"
                         class="mx-2 mb-2"
                         color="error"
-                        variant="oulined"
                     >
-                        <pre class="pa-2">{{ response.thrown }}</pre>
+                        <v-card-text>
+                            <pre>{{ response.thrown }}</pre>
+                        </v-card-text>
                     </v-card>
                     <v-card
                         v-if="!response.thrown && response.type === 'eval_result'"
                         class="mx-2 mb-2"
-                        variant="oulined"
+                        subtitle="Result"
                     >
-                        <highlightjs
-                            :code="JSON.stringify(response.eval_result, null, 4)"
-                            language="js"
-                        />
+                        <v-card-text>
+                            <highlightjs
+                                :code="JSON.stringify(response.eval_result, null, 4)"
+                                language="js"
+                            />
+                        </v-card-text>
                     </v-card>
                     <v-card
                         v-if="!response.thrown && response.type === 'exec_result' && response.results_list && response.results_list.length"
                         class="mx-2 mb-2"
-                        variant="oulined"
+                        subtitle="Results List"
                     >
-                        <highlightjs
-                            :code="JSON.stringify(response.results_list, null, 4)"
-                            language="js"
-                        />
+                        <v-card-text>
+                            <highlightjs
+                                :code="JSON.stringify(response.results_list, null, 4)"
+                                language="js"
+                            />
+                        </v-card-text>
                     </v-card>
                     <v-card
                         v-if="!response.thrown && response.type === 'exec_result' && response.results_dict && Object.keys(response.results_dict).length"
                         class="mx-2 mb-2"
-                        variant="oulined"
+                        subtitle="Results Dict"
                     >
-                        <highlightjs
-                            :code="JSON.stringify(response.results_dict, null, 4)"
-                            language="js"
-                        />
+                        <v-card-text>
+                            <highlightjs
+                                :code="JSON.stringify(response.results_dict, null, 4)"
+                                language="js"
+                            />
+                        </v-card-text>
                     </v-card>
                 </v-card>
             </div>
@@ -211,16 +219,21 @@
     }
 
     const editor = shallowRef();
+    const selectedCode = shallowRef('');
     const responses = ref([]);
     const responsesContainer = ref(null);
 
     function handleMount(editorInstance) {
         editor.value = editorInstance;
-    }
-
-    function getSelectedCode() {
-        const ed = editor.value;
-        return ed.getModel().getValueInRange(ed.getSelection());
+        editorInstance.onDidChangeCursorSelection(() => {
+            const selection = editorInstance.getSelection();
+            if (selection) {
+                const selectedTextValue = editorInstance.getModel().getValueInRange(selection);
+                selectedCode.value = selectedTextValue;
+            } else {
+                selectedCode.value = '';
+            }
+        });
     }
 
     function replaceSelectedCode(replacement) {
@@ -235,24 +248,24 @@
     }
 
     function handleAddElementToResultsList() {
-        replaceSelectedCode(`__EXEC_RESULTS_LIST__.append(${getSelectedCode()})`);
+        replaceSelectedCode(`__EXEC_RESULTS_LIST__.append(${selectedCode.value})`);
     }
 
     function handleAddValueToResultsDict() {
-        replaceSelectedCode(`__EXEC_RESULTS_DICT__[''] = ${getSelectedCode()}`);
+        replaceSelectedCode(`__EXEC_RESULTS_DICT__[''] = ${selectedCode.value}`);
     }
     
     function handleSendAllAndRun() {
         gateway.announce({
-            type: persistedState.mode.value,
-            code: persistedState.code.value,
+            type: persistedState.value.mode,
+            code: persistedState.value.code,
         });
     }
 
     function handleSendSelectionAndRun() {
         gateway.announce({
-            type: persistedState.mode.value,
-            code: getSelectedCode(),
+            type: persistedState.value.mode,
+            code: selectedCode.value,
         });
     }
 
