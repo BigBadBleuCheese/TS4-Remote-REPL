@@ -12,7 +12,7 @@
                 title="Remote REPL"
             >
                 <v-tooltip
-                    location="top"
+                    location="bottom"
                     text="Evaluate a single Python expression"
                 >
                     <template
@@ -30,7 +30,7 @@
                     </template>
                 </v-tooltip>
                 <v-tooltip
-                    location="top"
+                    location="bottom"
                     text="Execute a series of Python statements"
                 >
                     <template
@@ -51,7 +51,7 @@
                     vertical
                 />
                 <v-tooltip
-                    location="top"
+                    location="bottom"
                     text="Add an element to the results list"
                 >
                     <template
@@ -69,7 +69,7 @@
                     </template>
                 </v-tooltip>
                 <v-tooltip
-                    location="top"
+                    location="bottom"
                     text="Set a value in the results dict"
                 >
                     <template
@@ -90,7 +90,7 @@
                     vertical
                 />
                 <v-tooltip
-                    location="top"
+                    location="bottom"
                     text="Send All to TS4 and Run"
                 >
                     <template
@@ -108,7 +108,7 @@
                     </template>
                 </v-tooltip>
                 <v-tooltip
-                    location="top"
+                    location="bottom"
                     text="Send Selected to TS4 and Run"
                 >
                     <template
@@ -130,7 +130,7 @@
                     vertical
                 />
                 <v-tooltip
-                    location="top"
+                    location="bottom"
                     text="Toolbar Background Animation"
                 >
                     <template
