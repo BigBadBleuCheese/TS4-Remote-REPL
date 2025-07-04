@@ -50,5 +50,5 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CodeBleu-TS4RemoteREPL
-          path: "CodeBleu-TS4RemoteREPL.ts4script"
+          name: CodeBleu-TS4_Remote_REPL
+          path: "CodeBleu-TS4_Remote_REPL.ts4script"
