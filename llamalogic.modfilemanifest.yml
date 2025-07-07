@@ -3,4 +3,7 @@ description: Read Evaluation Print Loop for The Sims 4 hosted in a Bridged UI
 creators:
 - CodeBleu
 url: https://github.com/BigBadBleuCheese/TS4-Remote-REPL/releases
-hash: 5cc58ed5d7bab5668e1cc9c605961ced96221ec5708cc7babf90c785cb31c545
+hash: 8a5a89ab06ddf2dbb4fd6bcb9b15c215345b8b101b32800d9fb6861075da26d5
+subsumed_hashes:
+- 5cc58ed5d7bab5668e1cc9c605961ced96221ec5708cc7babf90c785cb31c545
+
