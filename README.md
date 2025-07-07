@@ -23,8 +23,7 @@ Remote REPL is a PlumbBuddy UI Bridge mod for The Sims 4 which allows you to exe
 # How to Use
 
 ## Have PlumbBuddy 1.5 or later
-This hasn't become generally available yet, so... I don't know... sweet talk Amethyst and maybe she'll slip you a file which *she really shouldn't*.
-Look, just don't tell me about it.
+This is currently in Creator Preview, so... if you're not a mod creator or someone *very* comfortable with testing... might be best to steer clear for the time being.
 
 ## Enable Runtime Mod Integration in PlumbBuddy
 This should be turned on by default, but in case it isn't...
